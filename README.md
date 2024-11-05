@@ -36,13 +36,13 @@ Pretrained models can be found in `./precomputed_ckpts/`. Several pretrained mod
 To train CNN, you will need to download the required datasets. Minimal training and validation dataset can be found in `./data/particle_image/`. 
 * [Particle image](https://github.com/wuwuwuas/Data_particle_detection.git)
 
-To train GNN, you will need to download the required datasets. Minimal training and validation dataset can be found in `./data/Fluid/`. 
-* [Fluid2D](https://github.com/JiamingSkGrey/PTV_dataset)
+To train GNN, you will need to download the required datasets. Minimal training and validation dataset can be found in `./data/PTVflow2D/`. 
+* [PTVflow2D](https://github.com/JiamingSkGrey/PTV_dataset)
 
 
 Several synthetic and experimental measurement test cases are provided:
 * Test data for particle localization with sub-pixel ('particle_image')
-* Test data for particle displacement prediction ('Fluid')
+* Test data for particle displacement prediction ('PTVflow2D')
 * Standard synthetic shear jet flow ('VSJ 301'). This is a series of PIV images for transient 3D flow field with slit light sheet, and you can download it from [VSJ 301](http://www.vsj.jp/~pivstd/image3d/image-e.html).
 
 ## Tracking Particle Trajectories from Consecutive Particle Images with AI-PTV
@@ -54,7 +54,7 @@ python test_AI_PTV.py  --gpu 0 --data_path ./data/vsj301/ --img_type bmp --name 
 ```
 This is the example result in the case of 'VSJ 301', from left to right are the original images, the tracking trajectories of AI-PTV(GOTrack) and AI-PTV(GOTrack+) respectively.
 
-![Measurement images](res/vsj301_image.gif)![PIV_4_B-LRAFT](res/vsj301_AI-PTV(GOTrack).gif)![AI-PTV(GOTrack+)](res/vsj301_AI-PTV(GOTrack+).gif)
+![vsj](res/vsj301.gif)
 
 You can put your own images under `data` and use AI-PTV to estimate flow motion.
 
