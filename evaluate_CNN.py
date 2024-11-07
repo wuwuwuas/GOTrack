@@ -20,8 +20,9 @@ def main():
     parser.add_argument('--locator_path', type=str, default='./precomputed_ckpts/CNN_locator/ckpt.tar',
                         help='path of already trained checkpoint for CNN locator (sub-pixel level)')
 
-    parser.add_argument('--data_path', type=str, default='./data/particle_image/',
+    parser.add_argument('--data_path', type=str, default= './data/particle_image/',
                         help='dataset for train')
+
     parser.add_argument('--output_dir_ckpt', type=str, default='./result/',
                         help='output directory for results')
 
@@ -37,7 +38,7 @@ def main():
     np.random.seed(0)
     torch.manual_seed(0)
     torch.set_grad_enabled(False)
-    train(args)
+    test(args)
 
 
 def img_split(img, target_img):
@@ -94,7 +95,7 @@ def data_read(images_pairs):
 
     return images, position_gt
 
-def train(args):
+def test(args):
     device = 'cuda:' + str(args.gpu)
     save_path = args.output_dir_ckpt + args.name + '/'
     if not os.path.exists(save_path):

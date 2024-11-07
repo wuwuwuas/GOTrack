@@ -178,7 +178,6 @@ def evaluate(args):
                 print('Sample:   ', i)
                 print('------------ Particle Detection--------------')
                 # first frame
-                image_scale = torch.from_numpy(np.array(args.scale_image)).to(device)
                 image = test_images[i:i+1,...]
                     
                 image = image.to(device)
@@ -192,8 +191,8 @@ def evaluate(args):
                 x_positions = torch.from_numpy(x_positions).to(device)
 
                 pred_pos = locator(patches.unsqueeze(1))
-                pred_y = pred_pos[:, 0:1] * image_scale
-                pred_x = pred_pos[:, 1:2] * image_scale
+                pred_y = pred_pos[:, 0:1]
+                pred_x = pred_pos[:, 1:2]
                 pos_pred = torch.cat((pred_y, pred_x),dim=1) + torch.cat((y_positions.unsqueeze(-1), x_positions.unsqueeze(-1)),dim=1)
 
                 image_np1 = image.cpu().squeeze().numpy()
@@ -218,8 +217,8 @@ def evaluate(args):
                 x_positions = torch.from_numpy(x_positions).to(device)
 
                 pred_pos = locator(patches.unsqueeze(1))
-                pred_y = pred_pos[:, 0:1] * image_scale
-                pred_x = pred_pos[:, 1:2] * image_scale
+                pred_y = pred_pos[:, 0:1]
+                pred_x = pred_pos[:, 1:2]
                 pos_pred = torch.cat((pred_y, pred_x),dim=1) + torch.cat((y_positions.unsqueeze(-1), x_positions.unsqueeze(-1)),dim=1)
 
                 image_np2 = image.cpu().squeeze().numpy()
@@ -274,7 +273,7 @@ def evaluate(args):
                 pc2 = pc2.cpu().numpy()
                 est_flow = est_flow.cpu().numpy()
                 
-                data_dict = {'pc1': pc1, 'pc2': pc2, 'est_flow': est_flow, 'scale':scale}
+                data_dict = {'pc1': pc1, 'pc2': pc2, 'est_flow': est_flow, 'scale':args.scale_image}
                 i_str = str(i).zfill(4)
                 savemat(f'{save_path}/result_{i_str}.mat', data_dict)
                 
