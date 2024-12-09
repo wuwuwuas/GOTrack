@@ -1,16 +1,11 @@
-## Particle Tracking for Complex Flow Motion Estimation Enhanced by Graph Neural Networks
+## GOTrack+: A Deep Learning Framework with Graph Optimal Transport for Particle Tracking Velocimetry
 
 ![Representative image](res/AI-PTV.png)
 
 ## Overview
-This is the official PyTorch implementation of "Particle Tracking for Complex Flow Motion Estimation Enhanced by Graph Neural Networks" (AI-PTV). 
-PTV is a key approach in experimental fluid dynamics and of fundamental importance in diverse applications, including automotive, aerospace, and biomedical engineering.
-In this work, we propose an AI-enhanced systematic PTV framework (AI-PTV) to track particle trajectories from consecutive images. 
-AI-PTV contains three components: 
-a convolutional neural network-based particle detector for particle recognition and sub-pixel coordinate localization; 
-a graph neural network-based initial displacement predictor for fluid motion estimation; 
-and an optimal transport-based particle tracker for continuous particle trajectory linking.
-Each component of AI-PTV can be extracted and used independently, not only to enhance classical PTV algorithms but also as a simple, fast, accurate, and stable alternative to traditional PTV projects.
+Particle image-based fluid measurement techniques are widely used to study complex flows in nature and industrial processes. Despite that particle tracking velocimetry (PTV) has shown potential in various experimental applications for quantitatively capturing unsteady flow characteristics, estimating fluid motion with long displacement and high particle density remains challenging. We propose an artificial-intelligence-enhanced PTV framework to track particle trajectories from consecutive images. The proposed framework, called GOTrack+ (a learning framework with graph optimal transport for particle tracking velocimetry), contains three components: a convolutional neural network-based particle detector for particle recognition and sub-pixel coordinate localization; a graph neural network-based initial displacement predictor for fluid motion estimation; and a graph-based optimal transport particle tracker for continuous particle trajectory linking. 
+Each component of GOTrack+ can be extracted and used independently, not only to enhance classical PTV algorithms but also as a simple, fast, accurate, and robust alternative to traditional PTV programs.
+Comprehensive evaluations, including numerical simulations and real-world experiments, have shown that GOTrack+ achieves state-of-the-art performance compared to recent PTV approaches. 
 
 The GNN displacement predictor is constructed in the [GOTFlow3D](https://doi.org/10.1038/s42256-023-00648-y) framework, which is the state-of-the-art model designed for 3D complex flow motion estimation.
 
@@ -45,20 +40,20 @@ Several synthetic and experimental measurement test cases are provided:
 * Test data for particle displacement prediction ('PTVflow2D')
 * Standard synthetic shear jet flow ('VSJ 301'). This is a series of PIV images for transient 3D flow field with slit light sheet, and you can download it from [VSJ 301](http://www.vsj.jp/~pivstd/image3d/image-e.html).
 
-## Tracking Particle Trajectories from Consecutive Particle Images with AI-PTV
+## Tracking Particle Trajectories from Consecutive Particle Images with GOTrack+
 
-This is a case of using AI-PTV to test the VSJ301 data set.
+This is a case of using GOTrack+ to test the VSJ301 data set.
 
 ```Shell
 python test_AI_PTV.py  --gpu 0 --data_path ./data/vsj301/ --img_type bmp --name vsj301 --tracking_mode GOTrack+ --result_plot 1 --delta_t 1 --illumination 0.9 --scale_image 1 --nb_iter 30 --candidates 8 --iters 12 --neighbor_similarity 7 --threshold_similarity 4 --neighbor_outlier 8 --threshold_outlier 2
 ```
-This is the example result in the case of 'VSJ 301', from left to right are the original images, the tracking trajectories of AI-PTV(GOTrack) and AI-PTV(GOTrack+) respectively.
+This is the example result in the case of 'VSJ 301', from left to right are the original images, the tracking trajectories of GOTrack and GOTrack+ respectively.
 
 ![vsj](res/vsj301.gif)
 
-You can put your own images under `data` and use AI-PTV to estimate flow motion.
+You can put your own images under `data` and use GOTrack+ to estimate flow motion.
 
-## Evaluation for AI-PTV's sub-modules
+## Evaluation for GOTrack+'s sub-modules
 
 To evaluate a pretrained particle detection model use `evaluate_CNN.py`. The following command shows an example:
 ```Shell
