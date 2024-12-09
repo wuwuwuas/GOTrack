@@ -3,9 +3,16 @@
 ![Representative image](res/AI-PTV.png)
 
 ## Overview
-Particle image-based fluid measurement techniques are widely used to study complex flows in nature and industrial processes. Despite that particle tracking velocimetry (PTV) has shown potential in various experimental applications for quantitatively capturing unsteady flow characteristics, estimating fluid motion with long displacement and high particle density remains challenging. We propose an artificial-intelligence-enhanced PTV framework to track particle trajectories from consecutive images. The proposed framework, called GOTrack+ (a learning framework with graph optimal transport for particle tracking velocimetry), contains three components: a convolutional neural network-based particle detector for particle recognition and sub-pixel coordinate localization; a graph neural network-based initial displacement predictor for fluid motion estimation; and a graph-based optimal transport particle tracker for continuous particle trajectory linking. 
-Each component of GOTrack+ can be extracted and used independently, not only to enhance classical PTV algorithms but also as a simple, fast, accurate, and robust alternative to traditional PTV programs.
-Comprehensive evaluations, including numerical simulations and real-world experiments, have shown that GOTrack+ achieves state-of-the-art performance compared to recent PTV approaches. 
+This is the official PyTorch implementation of "GOTrack+: A Deep Learning Framework with Graph Optimal Transport for Particle Tracking Velocimetry". 
+PTV is a key approach in experimental fluid dynamics and of fundamental importance in diverse applications, including automotive, aerospace, and biomedical engineering.
+In this work, we propose an AI-enhanced systematic PTV framework GOTrack+ to track particle trajectories from consecutive images. 
+GOTrack+ contains three components: 
+a convolutional neural network-based particle detector for particle recognition and sub-pixel coordinate localization; 
+a graph neural network-based initial displacement predictor for fluid motion estimation; 
+and an optimal transport-based particle tracker for continuous particle trajectory linking.
+Each component of GOTrack+ can be extracted and used independently, not only to enhance classical PTV algorithms but also as a simple, fast, accurate, and stable alternative to traditional PTV projects.
+
+
 
 The GNN displacement predictor is constructed in the [GOTFlow3D](https://doi.org/10.1038/s42256-023-00648-y) framework, which is the state-of-the-art model designed for 3D complex flow motion estimation.
 
