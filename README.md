@@ -34,14 +34,7 @@ Pretrained models can be found in `./precomputed_ckpts/`. Several pretrained mod
 * CNN_locator: CNN locator for particle sub-pixel coordinate localization
 * GNN_dis_predictor: GNN predictor for particle feature extraction and initial displacement prediction
 
-## Required Data
-To train CNN, you will need to download the required datasets. Minimal training and validation dataset can be found in `./data/particle_image/`. 
-* [Particle image](https://github.com/wuwuwuas/Data_particle_detection.git)
-
-To train GNN, you will need to download the required datasets. Minimal training and validation dataset can be found in `./data/PTVflow2D/`. 
-* [PTVflow2D](https://github.com/JiamingSkGrey/PTV_dataset)
-
-
+## Data
 Several synthetic and experimental measurement test cases are provided:
 * Test data for particle localization with sub-pixel ('particle_image')
 * Test data for particle displacement prediction ('PTVflow2D')
@@ -71,16 +64,3 @@ To evaluate a pretrained particle displacement prediction model use `evaluate_GN
 python evaluate_GNN.py --gpus 0 --dataset PTVflow2D --weights ./precomputed_ckpts/GNN_dis_predictor/best_checkpoint.params --iters 8
 ```
 
-## Training
-You can train a new particle detector from scratch using the following command, which consists of two parts: a CNN for pixel-level localization and a CNN for sub-pixel localization.
-```Shell
-python train_detector.py --name detector --data_path ./data/particle_image/ --batch_size 100 --epochs 1000 --init_lr 0.001 --reduce_factor 0.5 --patience_level 20
-```
-```Shell
-python train_loactor.py --name locator --data_path ./data/particle_image/ --batch_size 1000 --epochs 1000 --init_lr 0.001 --reduce_factor 0.5 --patience_level 20
-```
-
-You can train a new GNN displacement predictor from scratch using the following command. 
-```Shell
-python train_GNN.py --gpus 0 --dataset PTVflow2D --exp_path train --corr_levels 3 --iters 8 --batch_size 16 --test_batch_size 16 --num_epochs 100
-```
