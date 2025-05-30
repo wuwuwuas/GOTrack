@@ -44,14 +44,14 @@ class FluidflowDataset2D(Dataset):
                 self.cache[index] = (pos1, pos2, flow)
 
         if self.partition == 'train':
-            pos1 = pos1[:self.npoints, :]
-            pos2 = pos2[:self.npoints, :]
-            flow = flow[:self.npoints, :]
+            pos1 = pos1[:self.npoints, 0:2]
+            pos2 = pos2[:self.npoints, 0:2]
+            flow = flow[:self.npoints, 0:2]
 
         else:
-            pos1 = pos1[:self.npoints, :]
-            pos2 = pos2[:self.npoints, :]
-            flow = flow[:self.npoints, :]
+            pos1 = pos1[:self.npoints, 0:2]
+            pos2 = pos2[:self.npoints, 0:2]
+            flow = flow[:self.npoints, 0:2]
 
         pos1_center = np.mean(pos1, 0)
         pos1 -= pos1_center
@@ -94,14 +94,14 @@ class FluidflowDataset2D_test(Dataset):
                 self.cache[index] = (pos1, pos2, flow)
 
         if self.partition == 'train':
-            pos1 = pos1[:self.npoints, :]
-            pos2 = pos2[:self.npoints, :]
-            flow = flow[:self.npoints, :]
+            pos1 = pos1[:self.npoints, 0:2]
+            pos2 = pos2[:self.npoints, 0:2]
+            flow = flow[:self.npoints, 0:2]
 
         else:
-            pos1 = pos1[:self.npoints, :]
-            pos2 = pos2[:self.npoints, :]
-            flow = flow[:self.npoints, :]
+            pos1 = pos1[:self.npoints, 0:2]
+            pos2 = pos2[:self.npoints, 0:2]
+            flow = flow[:self.npoints, 0:2]
             #scale
             n_all, _ = pos1.shape
             size = (np.max(pos1[:, 0])-np.min(pos1[:, 0]))*(np.max(pos1[:, 1])-np.min(pos1[:, 1]))
