@@ -84,3 +84,21 @@ You can train a new GNN displacement predictor from scratch using the following 
 ```Shell
 python train_GNN.py --gpus 0 --dataset PTVflow2D --exp_path train --corr_levels 3 --iters 8 --batch_size 16 --test_batch_size 16 --num_epochs 100
 ```
+
+## Citation
+If you find our work useful in your research, please consider citing:
+```
+@ARTICLE{11145161,
+  author={Wang, Zhi and Wang, Zixuan and Xu, Chao and Cai, Shengze},
+  journal={IEEE Transactions on Circuits and Systems for Video Technology}, 
+  title={GOTrack+: A Deep Learning Framework With Graph Optimal Transport for Particle Tracking Velocimetry}, 
+  year={2026},
+  volume={36},
+  number={2},
+  pages={2358-2371},
+  doi={10.1109/TCSVT.2025.3604034}}
+```
+
+## Contact
+
+- **Contact**: For any questions, please feel free to reach out to us.

@@ -53,8 +53,9 @@ def main():
                         help='Number of unrolled iterations in the Sinkhorn algorithm')
 
     parser.add_argument('--tracking_mode', type=str, default='GOTrack+',
-                        choices=['GOTrack+', 'GOTrack'],
-                        help='output directory for results')
+                        choices=['GOTrack+', 'GOTrack'])
+    parser.add_argument('--nn_used', type=int, default=0,
+                        choices=[0, 1], help='Whether to use nearest neighbor matching. 0: No; 1: Yes')
     parser.add_argument('--candidates', type=int, default=12,
                         help='Number of candidate particles')
     

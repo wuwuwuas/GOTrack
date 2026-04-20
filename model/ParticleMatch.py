@@ -10,8 +10,9 @@ from tools import track_ot as track_ot
 from model.model_dgcnn import GeoDGCNN_flow2
 from model.model_track import get_recon_flow, get_recon_flow_knn, similarity_verify, removeoutlier, griddata_flow
 
-from knn_cuda import KNN
-
+# from knn_cuda import KNN
+from .KNN_torch import KNN
+# On Windows system, please replace KNN CUDA with KNN torch (from model.KNN_torch import KNN).
 class Tracking(nn.Module):
     def __init__(self, args):
         super(Tracking, self).__init__()
@@ -37,14 +38,124 @@ class Tracking(nn.Module):
         
         self.outlier_neighbors = args.neighbor_outlier
         self.threshold_outlier = args.threshold_outlier
-        
+        self.nearest = args.nn_used
+    # def matching(self, p, flow_pred, fmap1, fmap2, iters_match):
+    #     [xy1, xy2] = p
+    #     xy11 = xy1 + flow_pred
+    #     b, nb_points1, c = xy1.shape
+    #     dis_range = [1, 1]
+    #     knn_sim = KNN(k=self.sim_neighbors+1, transpose_mode=True)
+    #     knn_candidate = KNN(k=iters_match+1, transpose_mode=True)
+    #     _, nb0 = knn_sim(xy1, xy1)
+    #     _, nb1 = knn_sim(xy2, xy2)
+    #     _, sub_candidate = knn_candidate(xy2, xy11)
+    #
+    #     transport_cross, similarity_cross = track_ot.sinkhorn(
+    #         fmap1.transpose(1, -1),
+    #         fmap2.transpose(1, -1),
+    #         xy11,
+    #         xy2,
+    #         dis_range,
+    #         epsilon=torch.exp(self.epsilon) + 0.03,
+    #         gamma=torch.exp(self.gamma),
+    #         max_iter=self.nb_iter,
+    #         candidate=sub_candidate,
+    #     )
+    #
+    #     _, column_second_max_indices, row_second_max_indices, condition_indices = get_recon_flow(
+    #         transport_cross, [xy1, xy2])
+    #
+    #     track = condition_indices.int()
+    #     idx_sub = row_second_max_indices[:, :, 0] + 1
+    #
+    #     idx_sub = idx_sub * track - 1
+    #
+    #     appear_mask = torch.any(sub_candidate[..., :dis_range[0]] == idx_sub.unsqueeze(2), dim=2)
+    #     idx_sub = torch.where(appear_mask, idx_sub, torch.tensor(-1).cuda())
+    #
+    #
+    #     idx_sub = similarity_verify([xy1, xy2], idx_sub, self.sim_neighbors, self.threshold_similarity, nb0, nb1)
+    #
+    #     if torch.sum((idx_sub != -1)) > 15:
+    #         idx_sub, flow = removeoutlier([xy1, xy2], idx_sub + 1, self.outlier_neighbors, self.threshold_outlier)
+    #     else:
+    #         idx_sub = idx_sub + 1
+    #     a = 0
+    #     for iter in range(1, iters_match):
+    #         num0 = torch.sum((idx_sub != 0), dim=-1)
+    #         dis_range[0] = dis_range[0] + dis_range[1]
+    #
+    #         transport_cross, similarity_cross = track_ot.sinkhorn(
+    #             fmap1.transpose(1, -1),
+    #             fmap2.transpose(1, -1),
+    #             xy11,
+    #             xy2,
+    #             dis_range,
+    #             epsilon=torch.exp(self.epsilon) + 0.03,
+    #             gamma=torch.exp(self.gamma),  # ,self.gamma
+    #             max_iter=self.nb_iter,
+    #             candidate=sub_candidate,
+    #         )
+    #
+    #         _, column_second_max_indices, row_second_max_indices, condition_indices = get_recon_flow(
+    #             transport_cross, p)
+    #
+    #         track = condition_indices.int()
+    #         idx_sub0 = row_second_max_indices[:, :, 0] + 1
+    #         idx_sub0 = idx_sub0 * track - 1
+    #         zero_mask = (idx_sub == 0)
+    #
+    #         match_mask = (idx_sub != 0)
+    #         idx_sub0[match_mask] = -1
+    #
+    #         idx_sub = torch.where(zero_mask, idx_sub0 + 1, idx_sub)
+    #         idx_sub = idx_sub - 1
+    #
+    #         appear_mask = torch.any(sub_candidate[..., :dis_range[0]] == idx_sub.unsqueeze(2), dim=2)
+    #         idx_sub = torch.where(appear_mask, idx_sub, torch.tensor(-1).cuda())
+    #
+    #         idx_sub = similarity_verify([xy1, xy2], idx_sub, self.sim_neighbors, self.threshold_similarity, nb0, nb1)
+    #
+    #         if torch.sum((idx_sub != -1)) > 15:
+    #             idx_sub, flow = removeoutlier([xy1, xy2], idx_sub + 1, self.outlier_neighbors, self.threshold_outlier)
+    #         else:
+    #             idx_sub = idx_sub + 1
+    #
+    #         for i in range(b):
+    #             flattened_idx = idx_sub[i, :]
+    #             counts = torch.bincount(flattened_idx)
+    #             indices_to_zero = torch.nonzero(counts > 1).squeeze()
+    #             flattened_idx = torch.where(torch.isin(flattened_idx, indices_to_zero), torch.tensor(0).cuda(),
+    #                                         flattened_idx)
+    #             idx_sub[i, :] = flattened_idx
+    #
+    #         num = torch.sum((idx_sub != 0), dim=-1)
+    #
+    #         if torch.all(num - num0 <= 0):
+    #             a = a + 1
+    #         else:
+    #             a = a - 1
+    #         if a >= 1:
+    #             break
+    #
+    #     track_mask = (idx_sub != 0)
+    #     idx_sub = idx_sub - 1
+    #     idx_full = idx_sub * track_mask
+    #     idx_full_expand = idx_full.unsqueeze(-1).expand(-1, -1, 2)
+    #
+    #     pc_2 = torch.gather(xy2, 1, idx_full_expand)
+    #     flow = pc_2 - xy1
+    #     flow[track_mask == 0] = 0
+    #     flow_gri = griddata_flow(xy1, flow.clone(), track_mask)
+    #
+    #     return flow, flow_gri, track_mask, idx_full_expand
     def matching(self, p, flow_pred, fmap1, fmap2, iters_match):
         [xy1, xy2] = p
-        xy11 = xy1 + flow_pred 
+        xy11 = xy1 + flow_pred
         b, nb_points1, c = xy1.shape
         dis_range = [1, 1]
-        knn_sim = KNN(k=self.sim_neighbors+1, transpose_mode=True)
-        knn_candidate = KNN(k=iters_match+1, transpose_mode=True)
+        knn_sim = KNN(k=self.sim_neighbors + 1)
+        knn_candidate = KNN(k=iters_match + 1)
         _, nb0 = knn_sim(xy1, xy1)
         _, nb1 = knn_sim(xy2, xy2)
         _, sub_candidate = knn_candidate(xy2, xy11)
@@ -70,15 +181,15 @@ class Tracking(nn.Module):
         idx_sub = idx_sub * track - 1
 
         appear_mask = torch.any(sub_candidate[..., :dis_range[0]] == idx_sub.unsqueeze(2), dim=2)
-        idx_sub = torch.where(appear_mask, idx_sub, torch.tensor(-1).cuda())
-
+        idx_sub = torch.where(appear_mask, idx_sub, torch.tensor(-1, device=xy1.device))
 
         idx_sub = similarity_verify([xy1, xy2], idx_sub, self.sim_neighbors, self.threshold_similarity, nb0, nb1)
 
-        if torch.sum((idx_sub != -1)) > 15:
-            idx_sub, flow = removeoutlier([xy1, xy2], idx_sub + 1, self.outlier_neighbors, self.threshold_outlier)
-        else:
-            idx_sub = idx_sub + 1
+        idx_sub_clean, _ = removeoutlier([xy1, xy2], idx_sub + 1, self.outlier_neighbors, self.threshold_outlier)
+        valid_counts = torch.sum((idx_sub != -1), dim=-1)
+        valid_mask_batch = (valid_counts > 15).unsqueeze(-1)
+        idx_sub = torch.where(valid_mask_batch, idx_sub_clean, idx_sub + 1)
+
         a = 0
         for iter in range(1, iters_match):
             num0 = torch.sum((idx_sub != 0), dim=-1)
@@ -91,7 +202,7 @@ class Tracking(nn.Module):
                 xy2,
                 dis_range,
                 epsilon=torch.exp(self.epsilon) + 0.03,
-                gamma=torch.exp(self.gamma),  # ,self.gamma
+                gamma=torch.exp(self.gamma),
                 max_iter=self.nb_iter,
                 candidate=sub_candidate,
             )
@@ -111,20 +222,21 @@ class Tracking(nn.Module):
             idx_sub = idx_sub - 1
 
             appear_mask = torch.any(sub_candidate[..., :dis_range[0]] == idx_sub.unsqueeze(2), dim=2)
-            idx_sub = torch.where(appear_mask, idx_sub, torch.tensor(-1).cuda())
+            idx_sub = torch.where(appear_mask, idx_sub, torch.tensor(-1, device=xy1.device))
 
             idx_sub = similarity_verify([xy1, xy2], idx_sub, self.sim_neighbors, self.threshold_similarity, nb0, nb1)
 
-            if torch.sum((idx_sub != -1)) > 15:
-                idx_sub, flow = removeoutlier([xy1, xy2], idx_sub + 1, self.outlier_neighbors, self.threshold_outlier)
-            else:
-                idx_sub = idx_sub + 1
+            idx_sub_clean, _ = removeoutlier([xy1, xy2], idx_sub + 1, self.outlier_neighbors, self.threshold_outlier)
+            valid_counts = torch.sum((idx_sub != -1), dim=-1)
+            valid_mask_batch = (valid_counts > 15).unsqueeze(-1)
+            idx_sub = torch.where(valid_mask_batch, idx_sub_clean, idx_sub + 1)
 
             for i in range(b):
                 flattened_idx = idx_sub[i, :]
                 counts = torch.bincount(flattened_idx)
                 indices_to_zero = torch.nonzero(counts > 1).squeeze()
-                flattened_idx = torch.where(torch.isin(flattened_idx, indices_to_zero), torch.tensor(0).cuda(),
+                flattened_idx = torch.where(torch.isin(flattened_idx, indices_to_zero),
+                                            torch.tensor(0, device=xy1.device),
                                             flattened_idx)
                 idx_sub[i, :] = flattened_idx
 
@@ -140,15 +252,15 @@ class Tracking(nn.Module):
         track_mask = (idx_sub != 0)
         idx_sub = idx_sub - 1
         idx_full = idx_sub * track_mask
-        idx_full_expand = idx_full.unsqueeze(-1).expand(-1, -1, 2)
+        idx_full_expand = idx_full.unsqueeze(-1).expand(-1, -1, c)
 
         pc_2 = torch.gather(xy2, 1, idx_full_expand)
         flow = pc_2 - xy1
-        flow[track_mask == 0] = 0
+
+        flow = flow * track_mask.unsqueeze(-1).float()
         flow_gri = griddata_flow(xy1, flow.clone(), track_mask)
 
         return flow, flow_gri, track_mask, idx_full_expand
-
     def knn_match(self, p, flow_pred):
         [xy1, xy2] = p
         xy11 = xy1 + flow_pred
@@ -238,7 +350,8 @@ class Tracking(nn.Module):
         flow, flow_gri, track_mask, track_id = self.matching(p, flow0, fmap1, fmap2, self.candidates)
         flow, flow_gri, track_mask, track_id = self.matching(p, flow_gri, fmap1, fmap2, self.candidates)
 
-        flow, flow_gri, track_mask, track_id = self.knn_match(p, flow_gri)
-        flow, flow_gri, track_mask, track_id = self.knn_match(p, flow_gri)
+        if self.nearest ==1:
+            flow, flow_gri, track_mask, track_id = self.knn_match(p, flow_gri)
+            flow, flow_gri, track_mask, track_id = self.knn_match(p, flow_gri)
 
         return flow, track_mask
